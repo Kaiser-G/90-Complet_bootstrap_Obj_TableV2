@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image" href="../images/lézard.png" type="image/x-icon">
   <title>Exercice 1 (VOITURE_table_complete_class.html):</title>
   <!-- CDN CSS de BOOTSTRAP  -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
@@ -18,6 +19,18 @@
   body {
     background-color: aquamarine !important;
   }
+
+  #alert {
+    width: 30%;
+  }
+
+  #txtRech {
+    width: 30%;
+  }
+
+  #co {
+    margin-right: 15%;
+  }
 </style>
 
 <body>
@@ -25,6 +38,7 @@
   <br>
   <br>
   <br>
+  <img id="co" src="../images/coc.png" class="rounded float-right" alt="">
   <h1 class="text-center">Voitures avec class</h1>
   <br>
   <div class="container-fluid">
@@ -146,28 +160,6 @@
     </div>
   </div>
 
-  <!--Fenetre modal SUPPR-->
-  <!-- <div class="modal fade" id="frmSuppr" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Suppression</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-
-        <div class="form-floating mt-3 mb-3 modal-body">
-          <input type="text" class="form-control" id="txtCodeSuppr" placeholder="supprimer" name="supprimer" readonly>
-          <label for="pwd">SUPPRIMER LA LIGNE ?</label>
-        </div>
-
-        <div class="modal-footer">
-          <button id="btnSupprOui" type="button" class="btn btn-success" data-bs-dismiss="modal">Oui</button>
-          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Non</button>
-        </div>
-      </div>
-    </div>
-  </div> -->
-
 
   <!-- <script src="http://code.jquery.com/jquery.js"></script> -->
   <script src="./Js class/ajax_Class_Html.js"></script>
@@ -192,6 +184,35 @@
       		Nos fichiers JS  
       	--------------------------------------->
   <script>
+
+    //barre de recherche
+
+    ////////////////////////////////
+    //    La fonction pour activer la recherche sur la TABLE
+    ////////////////////////////////NE FONCTIONNE PAS
+    function search(saisie, table) {
+
+      let zoneRecherche = document.getElementById(saisie);
+      zoneRecherche.addEventListener("keyup", () => {
+
+        let row = document.getElementById("table");
+        let rows = document.getElementsByTagName("tr");
+        // console.log(rows);
+        for (item of rows) {
+          if (!item.innerText.includes(zoneRecherche.value)) {
+            item.classList.add("visually-hidden") // Classe BS
+          } else {
+            item.classList.remove("visually-hidden") // Classe BS
+          }
+        };
+      },
+        false);
+    }
+
+
+
+
+
     //creation du tableau
     function RetourGetAjax(reponse) {
       let myObj = JSON.parse(reponse);
@@ -246,7 +267,7 @@
       tab.fonction_suppr = supprVoiture;
       tab.fonction_vue = vueVoiture;
 
-      //exo 2
+      //Class BS
       tab.BS_class_vue = "btn btn-success";//Class Bootstrap
       tab.BS_class_modif = "btn btn-primary";
       tab.BS_class_sppr = "btn btn-danger";
@@ -256,6 +277,10 @@
 
       tab.separateur = ",";
       tab.generer();
+
+      // // Association de la zone de recherche avec la table
+      // // Le filtre devient actif
+      search("txtRech", "tliste");
     }
     /////////////////////////////////////////////////////////////////////
     //affiche le tableau
@@ -264,7 +289,6 @@
       // Liste des voitures
       Obj_AJAX.Cle = "";
       Obj_AJAX.get(RetourGetAjax, ErreurAjax);
-
     }
 
     function RetourAjax(reponse) {
@@ -275,6 +299,16 @@
       alert("Erreur Ajax " + reponse);
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //Message
+    function message(type, message) {
+      document.getElementById("message").innerHTML =
+        "<div id='alert' class = 'alert alert-" +
+        type +
+        " alert-dismissible' ><button type='button' class = 'btn-close' data-bs-dismiss = 'alert' role='alert' aria-label='Close'></button>" +
+        message +
+        "</div>";
+    }
 
 
     //Pour les modal
@@ -284,9 +318,8 @@
     function RetourVoiture_ajout() {
       //alert("Nouvelle voiture ajoutée");
       afficher_Liste();
-      document.getElementById("message").innerHTML = "Nouvelle voiture ajoutée";
+      message("success", "Nouvelle voiture ajoutée");
     }
-
 
     function Get_zones_ajout() {
       // Au format JSON
@@ -302,8 +335,6 @@
 
     }
 
-
-
     /////////////////////////////////////////////////////////////////////////////////
     //function_modif pour le tableau pas touch
     function modifVoiture(e) {
@@ -317,12 +348,11 @@
 
 
     //bouton enregistrer dans la fenetre modal
-    //id = btnModifEnreg
 
     function RetourAjax_modif(e) {
       //alert("Voiture bien modifiée avec le code : entrée fonction RetourAjax" + e);
       afficher_Liste();
-      document.getElementById("message").innerHTML = "Votre modification a été enregistré";
+      message("primary", "Voiture modifiée");
     }
 
     function Get_zones_modif(e) {
@@ -340,7 +370,6 @@
       document.getElementById("message").innerHTML = "Votre modification n'a pas été enregistré";
     }
 
-
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //function_vue
     function vueVoiture(e) {
@@ -353,9 +382,8 @@
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
     //fonction_suppr
-
     function supprVoiture(e) {
-      alert("Click sur supp voiture");
+      //alert("Click sur supp voiture");
       let valeurs = e.target.value.split(",");
       let reponse = confirm(
         "Êtes-vous certain de vouloir supprimer cette voiture ?"
@@ -365,29 +393,23 @@
         Obj_AJAX.del(retourAjaxSuppr, erreur);
       }
 
-
-      // document.getElementById("txtCodeSuppr").value = valeurs[0];
-
     }
     function retourAjaxSuppr(reponse) {
       // Liste des voitures
       afficher_Liste();
 
       if (reponse === "1") {
-        alert("Voiture supprimée")
-        document.getElementById("message").innerHTML = "Voiture supprimée";
+        //alert("Voiture supprimée")
+        message("danger", "Voiture supprimée");
 
       } else {
         document.getElementById("message").innerHTML = " Voiture non supprimée"
 
       }
     }
-
-
     function erreur(reponse) {
       alert("Erreur Ajax " + reponse);
     }
-
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -423,22 +445,6 @@
         Obj_AJAX.put(params, RetourAjax_modif, Erreur_Ajax_modif);
       }, false);
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      //supprimer
-      //bouton oui dans la fenetre modal supprimer id=btnSupprOui
-      // let btnSupp = document.getElementById("btnSupprOui");
-      // btnSupp.addEventListener("click", (e) => {
-      //   //code = document.getElementById("txtCodeSuppr").value;
-      //   // console.log(code);
-      //   //let ajax = new Ajax_Es6(url);
-      //   // Obj_AJAX.Cle = valeurs[0]; // Recupération du code à supprimer
-      //   // Obj_AJAX.del(retourAjaxSuppr, erreur);
-      //   ////////NE FONCTIONNE PAS ERREUR///////////////////////////////////////////////////
-      //   // ajax.cle = code.valeurs[0];
-      //   // ajax.del(retourAjaxSuppr, erreur);
-      //   // alert("Click sur supp voiture");
-      //   // ajax.Cle = valeurs[0]; // Recupération du code à supprimer
-      //   // ajax.del(retourAjaxSuppr, erreur);
-      // }, false);
 
     }, false);
 
